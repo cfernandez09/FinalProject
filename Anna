@@ -1,68 +1,74 @@
-
 public class FinalProject {
 
-	// Inputing String into hashtable with seperate chaining or linear probing
-	// Have the hashKey = lenght of the word / size
-	final static int size = 97;
-	String[] dictionary = { "an", "as", "at", "be", "by", "do", "go", "he", "if", "in", "is", "it", "my", "no", "of",
-			"on", "or", "so", "to", "up", "we", "all", "and", "are", "but", "can", "day", "did", "for", "had", "has",
-			"her", "him", "his", "hot", "how", "may", "now", "one", "out", "see", "she", "the", "two", "use", "was",
-			"way", "who", "you", "been", "call", "come", "down", "each", "from", "have", "know", "like", "long", "look",
-			"make", "many", "more", "most", "over", "said", "side", "some", "than", "that", "them", "then", "they",
-			"this", "time", "what", "when", "were", "will", "with", "word", "your", "about", "could", "first", "other",
-			"sound", "their", "there", "these", "thing", "water", "which", "would", "write", "number", "people" };
+ // Inputing String into hashtable with seperate chaining or linear probing
+ // Have the hashKey = lenght of the word / size
+ final static int size = 97;
+ 
+ //dictionary
+ final static String[] dictionary = { "an", "as", "at", "be", "by", "do", "go", "he", "if", "in", "is", "it", "my", "no", "of",
+   "on", "or", "so", "to", "up", "we", "all", "and", "are", "but", "can", "day", "did", "for", "had", "has",
+   "her", "him", "his", "hot", "how", "may", "now", "one", "out", "see", "she", "the", "two", "use", "was",
+   "way", "who", "you", "been", "call", "come", "down", "each", "from", "have", "know", "like", "long", "look",
+   "make", "many", "more", "most", "over", "said", "side", "some", "than", "that", "them", "then", "they",
+   "this", "time", "what", "when", "were", "will", "with", "word", "your", "about", "could", "first", "other",
+   "sound", "their", "there", "these", "thing", "water", "which", "would", "write", "number", "people" };
 
-	// creating string array and int array
-	static String[] stringArray = new String[size];
+ // creating string array and int array
+ static String[] stringArray = new String[size];
+ 
+ //function to hash
+ public void hash() {
+   for (int i = 0; i < dictionary.length; i++)
+     linearProbing(dictionary[i]);
+   
+ }
 
-	// function to insert into the array using linear probing
-	public void linearProbing(String s) {
-		int hashKey = s.length() % size;
-		int insert = hashKey;
-		int i = 1;
-		while (stringArray[insert] != null) {
-			insert = hashKey + i;
-			insert %= size;
-			i++;
-		}
-		stringArray[insert] = s;
-	}
+ // function to insert into the array using linear probing
+ public void linearProbing(String s) {
+   int hashKey = s.length() % size;
+   int insert = hashKey;
+   int i = 1;
+   while (stringArray[insert] != null) {
+     insert = hashKey + i;
+     insert %= size;
+     i++;
+   }
+   stringArray[insert] = s;
+ }
+ 
+ /*
+  * Algorythm to scrabble words
+  */
 
-	/*
-	 * Algorythm to scrabble words
-	 */
+ public void rearrange(String s) {
+   rearrange("", s);
+ }
 
-	public void rearrange(String s) {
-		rearrange("", s);
+ private static void rearrange(String prefix, String s) {
+   if (s.length() == 0)
+     System.out.println(prefix);
+   else {
+     for (int i = 0; i < s.length(); i++)
+       rearrange(prefix + s.charAt(i), s.substring(0, i) + s.substring(i + 1, s.length()));
+   }
+ }
+ 
+ 
 
-	}
+//  public void print() {
+//    for(int i = 0; i < stringArray.length; i++)
+//      if (stringArray[i] == null)
+//      System.out.println(i + ": null");
+//    else
+//      System.out.println(i + ": " + stringArray[i]);
+//  }
 
-	private static void rearrange(String prefix, String s) {
-		if (s.length() == 0)
-			System.out.println(prefix);
-		else {
-			for (int i = 0; i < s.length(); i++)
-				rearrange(prefix + s.charAt(i), s.substring(0, i) + s.substring(i + 1, s.length()));
-		}
-	}
-	
-	
-
-	// public void print() {
-	// for(int i = 0; i < stringArray.length; i++)
-	// if (stringArray[i] == null)
-	// System.out.println(i + ": null");
-	// else
-	// System.out.println(i + ": " + stringArray[i]);
-	// }
-
-	public static void main(String[] args) {
-		FinalProject a = new FinalProject();
-		a.rearrange("blah");
-
-		for (int i = 0; i < dictionary.length; i++)
-			x.linearProbing(dictionary[i]);
-		// x.print();
-	}
-
+  public static void main(String[] args) {
+    FinalProject a = new FinalProject();
+    a.rearrange("blah");
+    a.hash();
+    //a.print();
+    
+  }
+  
 }

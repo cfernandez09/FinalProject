@@ -1,5 +1,6 @@
 
 public class FinalProject {
+
  //Inputing String into hashtable with seperate chaining or linear probing
   //Have the hashKey = lenght of the word / size
   final static int size = 97;
@@ -22,13 +23,13 @@ public class FinalProject {
     stringArray[insert] = s;
   }
   
-  public void print() { 
-    for(int i = 0; i < stringArray.length; i++) 
-      if (stringArray[i] == null) 
-      System.out.println(i + ": null"); 
-    else 
-      System.out.println(i + ": " + stringArray[i]); 
-  }
+//  public void print() { 
+//    for(int i = 0; i < stringArray.length; i++) 
+//      if (stringArray[i] == null) 
+//      System.out.println(i + ": null"); 
+//    else 
+//      System.out.println(i + ": " + stringArray[i]); 
+//  }
   
   public static void main(String[] args) { 
     Ennumerate x = new Ennumerate(); 
@@ -40,36 +41,8 @@ public class FinalProject {
         
     for(int i = 0; i < dictionary.length; i++) 
       x.linearProbing(dictionary[i]); 
-    x.print(); 
+   // x.print(); 
   }
-
-	// Complete an array representing first 100 words of a dictionary
-	String[] dictionary = { "a", "al", "blah", "blah blah" };
-
-	// Inputing String into hashtable with seperate chaining or linear probing
-	// Have the hashey = lenght of the word / size
-	final static int size = 97;
-
-	// PROBLEM 2
-	// creating string array and int array
-	static Integer[] intArray = new Integer[size];
-	static String[] stringArray = new String[size];
-
-	// function to insert into the two arrays using quadratic probing
-	public void quadraticProbing(String s, Integer n) {
-		int hashKey = n % size;
-		int i = 1;
-
-		while (intArray[hashKey] != null && stringArray[hashKey] != null) {
-			hashKey = (n % size) + (i * i);
-			if (hashKey >= intArray.length && hashKey >= stringArray.length)
-				hashKey = hashKey - size;
-			i++;
-		}
-
-		stringArray[hashKey] = s;
-		intArray[hashKey] = n;
-	}
 
 	/*
 	 * Algorythm to scrabble words

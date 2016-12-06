@@ -1,4 +1,8 @@
-import java.util.LinkedList;
+
+//Ouput: runtimes for search and input
+//Do Tree data structure
+
+import java.util.Scanner;
 
 public class FinalProject {
 
@@ -14,9 +18,8 @@ public class FinalProject {
 
 	// all fields
 	private static int tableSize = 97;
-	private int numWords;
+	private int numWords = 0;
 	private static String[] table = new String[tableSize];
-	static LinkedList<String> scrabbledList = new LinkedList<String>();
 
 	/*
 	 * 
@@ -38,6 +41,7 @@ public class FinalProject {
 	 * HASHTABLE IMPLEMENTING DICTIONARY
 	 * 
 	 */
+
 	// function to obtain hashKey
 	public static int hash(String s) {
 		int tempValue = 0;
@@ -50,15 +54,30 @@ public class FinalProject {
 	// insert a record into the hashtable
 	public void insert(String s) {
 		int hashKey = hash(s);
+		while (table[hashKey] != null)
+			hashKey = hashKey++;
 		table[hashKey] = s;
+		numWords++;
+	}
+
+	// return number of words in the hashtable
+	public int numberOfWords() {
+		return numWords;
 	}
 
 	// search for a record
 	public static String search(String myWord) {
 		// compute the hash value of the given word
 		int hashKey = hash(myWord);
-
-		if (table[hashKey] != null && myWord.compareTo(table[hashKey]) == 0) {
+		//System.out.println("Value of table at a certain hashKey: " + table[hashKey] + " Hashkey " + hashKey);
+		while (myWord != table[hashKey] && table[hashKey] != null) {
+			System.out.println("Are we here?");
+			if (hashKey > table.length)
+				hashKey = hashKey - table.length;
+			hashKey = hashKey++;
+		}
+		//System.out.println("Maybe we here");
+		if (myWord == table [hashKey]) {
 			System.out.println("You have the following results matching: " + table[hashKey]);
 			return table[hashKey];
 		} else
@@ -91,10 +110,20 @@ public class FinalProject {
 	 * 
 	 */
 	public static void main(String[] args) {
+
+		// new instance of the final project
 		FinalProject a = new FinalProject();
-		a.insert("dog");
-		a.insert("no");
-		a.insert("it");
-		a.rearrange("dog");
+
+		// propmts user for a string to scramble
+		Scanner scan = new Scanner(System.in);
+		System.out.println("Enter your letters as a string without spaces in it: ");
+		String s = scan.next();
+
+		// loop to insert dictionary into the string array
+
+		// loop to insert dictionary into the hash table
+
+		// calle rearrange for prompted string by user
+		a.rearrange(s);
 	}
 }

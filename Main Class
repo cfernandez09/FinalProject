@@ -1,146 +1,194 @@
+
+/*
+ * Done by Caitlin Fernandez and Anna Sedlackova
+ * Takes a string input and outputs anagrams that match the 1000 most common words in the English Dictionary.
+ */
+
 import java.util.Scanner;
 import java.io.*;
 
 public class FinalProject {
 
- // all fields
- private static int tableSize = 1997;
- private static int numWords = 0;
- private static String[] table = new String[tableSize];
- 
- 
- private static String fileName = "Dictionary.txt";
- private static String[] dictionary = new String[1000];
- private static String ln = null;
+	/**
+	 * All fields for the class.
+	 */
 
+	private static int tableSize = 1997; // Size of the hash table.
+	private static int numWords = 0; // Stores number of words in the hash
+										// table.
+	private static String[] table = new String[tableSize];
+	private static String fileName = "Dictionary.txt"; // Name of the file
+														// storing the
+														// dictionary.
+	private static String[] dictionary = new String[1000];
+	private static String ln = null; // Line of the text editor.
 
- /*
-  * 
-  * HASHTABLE IMPLEMENTING DICTIONARY
-  * 
-  */
- // function to obtain hashKey
- public static int insert(String s) {
-  int tempValue = 0;
-  for (int i = 0; i < s.length(); i++)
-   tempValue = tempValue + (s.charAt(i) - 'a');
-  int hashKey = tempValue % tableSize;
-  while (table[hashKey] != null) {
-     hashKey++;
-     hashKey = hashKey % tableSize;
-  }
-  table[hashKey] = s;
-  numWords++;
-  //System.out.println(table[hashKey]);
-  return hashKey; 
- }
- 
- 
- 
-  public static int hashInput(String s) {
-    int tempValue = 0;
-    for (int i = 0; i < s.length(); i++)
-      tempValue = tempValue + (s.charAt(i) - 'a');
-    int hashKey = (tempValue + (s.length() % 7)) % tableSize;
-    return hashKey; 
- }
-  
- // return number of words in the hashtable
- public int numberOfWords() {
-  return numWords;
- }
+	/**
+	 * DICTIONARY Converts a text file Dictionary.txt into an array of strings.
+	 */
 
- // search for a record
- public static String search(String myWord) {
-  // compute the hash value of the given word
-  int hashKey = hashInput(myWord);
-  System.out.println(table[hashKey]);
-  int tempKey = hashKey;
-  int i = 0;
-  
-  if (myWord != table[tempKey]) {
-    //System.out.println(table[tempKey]);
-    while (i < tableSize && myWord != table[tempKey]) {
-      tempKey++;
-      i++;
-      if (tempKey >= tableSize) {
-        tempKey -= tableSize; 
-      }
-    }
-  }
-  
-  if (myWord != table[tempKey])
-    return null;
-  else
-    return table[tempKey];
- }
+	private static void toDictionary() {
 
- /*
-  * 
-  * ALGORITHM TO SCRAMBLE WORDS
-  * 
-  */
- public void rearrange(String s) {
-  rearrange("", s);
- }
+		try {
+			FileReader filereader = new FileReader(fileName);
+			BufferedReader bufferedReader = new BufferedReader(filereader);
+			int i = 0;
+			while ((ln = bufferedReader.readLine()) != null) {
+				dictionary[i] = ln;
+				insertIntoHashMap(ln);
+				i++;
+			}
+			bufferedReader.close();
+		} catch (FileNotFoundException ex) {
+			System.out.println("Unable to open file '" + fileName + "'");
+		} catch (IOException ex) {
+			System.out.println("Error reading file '" + fileName + "'");
+		}
 
- private static void rearrange(String prefix, String s) {
-  if (search(prefix) != null) 
-    System.out.println(search(prefix));
-  if (s.length() != 0) {
-   for (int i = 0; i < s.length(); i++) {
-    String sub = s.substring(0, i) + s.substring(i + 1, s.length());
-    rearrange(prefix + s.charAt(i), s.substring(0, i) + s.substring(i + 1, s.length()));
-   }
-  }
- }
- 
- private static void readDictionary() {
-   
-   try {
-    FileReader filereader = new FileReader(fileName);
-    BufferedReader bufferedReader = new BufferedReader(filereader);
-    int i = 0;
-    while((ln = bufferedReader.readLine()) != null) {
-      dictionary[i] = ln;
-      insert(ln);
-      i++;  
-    }
-    bufferedReader.close();
-  }
-  catch(FileNotFoundException ex) {
-    System.out.println("Unable to open file '" + fileName + "'");                
-  }
-  catch(IOException ex) {
-    System.out.println("Error reading file '" + fileName + "'");                  
-  }
-  
- }
+	}
 
- /*
-  * 
-  * MAIN METHOD
-  * 
-  */
- public static void main(String[] args) {
+	/**
+	 * DATA STRUCTURE : Simple array
+	 * 
+	 * @param word
+	 * @return whether or not is the string contained within the dictionary
+	 */
 
-  // new instance of the final project
-  FinalProject a = new FinalProject();
+	private static boolean searchArray(String word) {
+		for (int i = 0; i < dictionary.length; i++) {
+			if (dictionary[i] != null && word.compareTo(dictionary[i]) == 0) {
+				System.out.println("Results from Array:" + word);
+				return true;
+			}
+		}
+		return false;
+	}
 
-  // propmts user for a string to scramble
-  Scanner scan = new Scanner(System.in);
-  System.out.println("Enter your letters as a string without spaces in it: ");
-  String s = scan.next();
+	/**
+	 * DATA STRUCTURE: Hash table
+	 * 
+	 * @param s
+	 * @return hashKey where input string is positioned
+	 */
 
-  a.readDictionary();
-  
-  
-  // loop to insert dictionary into the string array
-  
+	public static int insertIntoHashMap(String s) {
+		int tempValue = 0;
+		int j = 1;
+		for (int i = 0; i < s.length(); i++)
+			tempValue = tempValue + (s.charAt(i) - 'a');
+		int hashKey = tempValue % tableSize;
+		while (table[hashKey] != null) {
+			hashKey = tempValue % tableSize + j;
+			if (hashKey >= tableSize)
+				hashKey = hashKey - tableSize;
+			j++;
+		}
 
-  // loop to insert dictionary into the hash table
+		table[hashKey] = s;
+		numWords++;
+		return hashKey;
+	}
 
-  // calle rearrange for prompted string by user
-  a.rearrange(s);
- }
+	/**
+	 * DATA STRUCTURE: Hash table
+	 * 
+	 * @param s
+	 * @return returns where input string is positioned
+	 */
+	public static int getHashKey(String s) { // Same as method above except it
+												// does not place it into the
+												// hash table.
+		int tempValue = 0;
+		for (int i = 0; i < s.length(); i++)
+			tempValue = tempValue + (s.charAt(i) - 'a');
+		int hashKey = tempValue % tableSize;
+		return hashKey;
+	}
+
+	/**
+	 * DATA STRUCTURE: Hash table
+	 * 
+	 * @return number of words in the hash table
+	 */
+	public int numberOfWords() {
+		return numWords;
+	}
+
+	/**
+	 * DATA STRUCTURE: Hash table
+	 * 
+	 * @param myWord
+	 * @return searches for the match in the hash map
+	 */
+	public static String searchHashMap(String myWord) {
+		// compute the hash value of the given word
+		int hashKey = getHashKey(myWord);
+		int i = 0;
+		while (i < tableSize && table[hashKey] != null && myWord.compareTo(table[hashKey]) != 0) {
+			if (hashKey >= tableSize) {
+				hashKey -= tableSize;
+			}
+			hashKey++;
+			i++;
+		}
+
+		if (table[hashKey] != null && myWord.compareTo(table[hashKey]) == 0) {
+			System.out.println("Results from Hash Map: " + table[hashKey]);
+			return table[hashKey];
+		} else
+			return null;
+	}
+
+	/**
+	 * SCRAMBLE ALGORITHM
+	 * 
+	 * @param s
+	 */
+	public static void findMatches(String s) {
+		findMatches("", s);
+	}
+
+	/**
+	 * SCRAMBLE ALGORITHM
+	 * 
+	 * @param prefix
+	 * @param s
+	 */
+	private static void findMatches(String prefix, String s) {
+		searchArray(prefix);
+		searchHashMap(prefix);
+		if (s.length() != 0) {
+			for (int i = 0; i < s.length(); i++) {
+				findMatches(prefix + s.charAt(i), s.substring(0, i) + s.substring(i + 1, s.length()));
+			}
+		}
+	}
+
+	/**
+	 * MAIN METHOD
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+
+		// Prompts user for a string to scramble
+		Scanner scan = new Scanner(System.in);
+		System.out.println("Enter your letters as a string without spaces in it: ");
+		String s = scan.next();
+		scan.close();
+
+		// reads the dictionary
+		FinalProject.toDictionary();
+
+		// calls findMatches for prompted string by user
+		FinalProject.findMatches(s);
+		
+		//time for insertion for array
+		
+		//time for insertion for hash table
+		
+		//time for search for array
+		
+		//time for search for hash table
+	}
 }

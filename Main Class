@@ -1,156 +1,146 @@
-
-//Ouput: runtimes for search and input
-//Do Tree data structure
-
 import java.util.Scanner;
 import java.io.*;
 
 public class FinalProject {
 
-	// all fields
-	private static int tableSize = 2000;
-	private static int numWords = 0;
-	private static String[] table = new String[tableSize];
+ // all fields
+ private static int tableSize = 1997;
+ private static int numWords = 0;
+ private static String[] table = new String[tableSize];
+ 
+ 
+ private static String fileName = "Dictionary.txt";
+ private static String[] dictionary = new String[1000];
+ private static String ln = null;
 
-	private static String fileName = "Dictionary.txt";
-	private static String[] dictionary = new String[1000];
-	private static String ln = null;
 
-	/*
-	 * 
-	 * DICTIONARY
-	 * 
-	 */
+ /*
+  * 
+  * HASHTABLE IMPLEMENTING DICTIONARY
+  * 
+  */
+ // function to obtain hashKey
+ public static int insert(String s) {
+  int tempValue = 0;
+  for (int i = 0; i < s.length(); i++)
+   tempValue = tempValue + (s.charAt(i) - 'a');
+  int hashKey = tempValue % tableSize;
+  while (table[hashKey] != null) {
+     hashKey++;
+     hashKey = hashKey % tableSize;
+  }
+  table[hashKey] = s;
+  numWords++;
+  //System.out.println(table[hashKey]);
+  return hashKey; 
+ }
+ 
+ 
+ 
+  public static int hashInput(String s) {
+    int tempValue = 0;
+    for (int i = 0; i < s.length(); i++)
+      tempValue = tempValue + (s.charAt(i) - 'a');
+    int hashKey = (tempValue + (s.length() % 7)) % tableSize;
+    return hashKey; 
+ }
+  
+ // return number of words in the hashtable
+ public int numberOfWords() {
+  return numWords;
+ }
 
-	// File Reader with a 1000 word dictionary
-	public static void readDictionary() {
+ // search for a record
+ public static String search(String myWord) {
+  // compute the hash value of the given word
+  int hashKey = hashInput(myWord);
+  System.out.println(table[hashKey]);
+  int tempKey = hashKey;
+  int i = 0;
+  
+  if (myWord != table[tempKey]) {
+    //System.out.println(table[tempKey]);
+    while (i < tableSize && myWord != table[tempKey]) {
+      tempKey++;
+      i++;
+      if (tempKey >= tableSize) {
+        tempKey -= tableSize; 
+      }
+    }
+  }
+  
+  if (myWord != table[tempKey])
+    return null;
+  else
+    return table[tempKey];
+ }
 
-		try {
-			FileReader filereader = new FileReader(fileName);
-			BufferedReader bufferedReader = new BufferedReader(filereader);
-			int i = 0;
-			while ((ln = bufferedReader.readLine()) != null) {
-				dictionary[i] = ln;
-				i++;
-				//insert(dictionary[i]);
-			}
-			bufferedReader.close();
-		} catch (
+ /*
+  * 
+  * ALGORITHM TO SCRAMBLE WORDS
+  * 
+  */
+ public void rearrange(String s) {
+  rearrange("", s);
+ }
 
-		FileNotFoundException ex) {
-			System.out.println("Unable to open file '" + fileName + "'");
-		} catch (IOException ex) {
-			System.out.println("Error reading file '" + fileName + "'");
-		}
+ private static void rearrange(String prefix, String s) {
+  if (search(prefix) != null) 
+    System.out.println(search(prefix));
+  if (s.length() != 0) {
+   for (int i = 0; i < s.length(); i++) {
+    String sub = s.substring(0, i) + s.substring(i + 1, s.length());
+    rearrange(prefix + s.charAt(i), s.substring(0, i) + s.substring(i + 1, s.length()));
+   }
+  }
+ }
+ 
+ private static void readDictionary() {
+   
+   try {
+    FileReader filereader = new FileReader(fileName);
+    BufferedReader bufferedReader = new BufferedReader(filereader);
+    int i = 0;
+    while((ln = bufferedReader.readLine()) != null) {
+      dictionary[i] = ln;
+      insert(ln);
+      i++;  
+    }
+    bufferedReader.close();
+  }
+  catch(FileNotFoundException ex) {
+    System.out.println("Unable to open file '" + fileName + "'");                
+  }
+  catch(IOException ex) {
+    System.out.println("Error reading file '" + fileName + "'");                  
+  }
+  
+ }
 
-		// for (int i = 0; i < dictionary.length; i++){
-		// System.out.println(dictionary[i]);
-		// }
-	}
+ /*
+  * 
+  * MAIN METHOD
+  * 
+  */
+ public static void main(String[] args) {
 
-	/*
-	 * 
-	 * SIMPLE ARRAY IMPLEMENTING DICTIONARY
-	 * 
-	 */
+  // new instance of the final project
+  FinalProject a = new FinalProject();
 
-	private static boolean isWord(String word) {
-		for (int i = 0; i < dictionary.length; i++) {
-			if (word.compareTo(dictionary[i]) == 0) {
-				System.out.println(word);
-				return true;
-			}
-		}
-		return false;
-	}
+  // propmts user for a string to scramble
+  Scanner scan = new Scanner(System.in);
+  System.out.println("Enter your letters as a string without spaces in it: ");
+  String s = scan.next();
 
-	/*
-	 * 
-	 * HASHTABLE IMPLEMENTING DICTIONARY
-	 * 
-	 */
+  a.readDictionary();
+  
+  
+  // loop to insert dictionary into the string array
+  
 
-	// function to obtain hashKey
-	public static int hash(String s) {
-		int tempValue = 0;
-		for (int i = 0; i < s.length(); i++)
-			tempValue = tempValue + (s.charAt(i) - 'a');
-		int hashKey = tempValue % tableSize;
-		return hashKey;
-	}
+  // loop to insert dictionary into the hash table
 
-	// insert a record into the hashtable
-	public static void insert(String s) {
-		int hashKey = hash(s);
-		while (table[hashKey] != null)
-			hashKey = hashKey++;
-		table[hashKey] = s;
-		numWords++;
-	}
-
-	// return number of words in the hashtable
-	public static int numberOfWords() {
-		return numWords;
-	}
-
-	// search for a record
-	public static String search(String myWord) {
-		// compute the hash value of the given word
-		int hashKey = hash(myWord);
-
-		while (myWord != table[hashKey] && table[hashKey] != null) {
-			System.out.println("Are we here?");
-			if (hashKey > table.length)
-				hashKey = hashKey - table.length;
-			hashKey = hashKey++;
-		}
-		// System.out.println("Maybe we here");
-		if (myWord == table[hashKey]) {
-			System.out.println("You have the following results matching: " + table[hashKey]);
-			return table[hashKey];
-		} else
-			System.out.println("NO RESULTS");
-			return null;
-	}
-
-	/*
-	 * 
-	 * ALGORITHM TO SCRAMBLE WORDS
-	 * 
-	 */
-	public static void rearrange(String s) {
-		rearrange("", s);
-	}
-
-	private static void rearrange(String prefix, String s) {
-		// isWord(prefix);
-		search(prefix);
-		if (s.length() != 0) {
-			for (int i = 0; i < s.length(); i++) {
-				String sub = s.substring(0, i) + s.substring(i + 1, s.length());
-				rearrange(prefix + s.charAt(i), s.substring(0, i) + s.substring(i + 1, s.length()));
-			}
-		}
-	}
-
-	/*
-	 * 
-	 * MAIN METHOD
-	 * 
-	 */
-	public static void main(String[] args) {
-
-		// Prompts user for a string to scramble
-		Scanner scan = new Scanner(System.in);
-		System.out.println("Enter your letters as a string without spaces in it: ");
-		String s = scan.next();
-
-		dictionary[0] = "dog";
-		dictionary[2] = "god";
-		// calls to read the dictionary file
-		//FinalProject.readDictionary();
-
-		// calls rearrange for prompted string by user
-		FinalProject.rearrange(s);
-	}
+  // calle rearrange for prompted string by user
+  a.rearrange(s);
+ }
 }

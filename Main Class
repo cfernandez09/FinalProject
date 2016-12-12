@@ -12,6 +12,14 @@ public class FinalProject {
 	/**
 	 * All fields for the class.
 	 */
+	static long start1;
+	static long end1;
+	static long start2;
+	static long end2;
+	static long start3;
+	static long end3;
+	static long start4;
+	static long end4;
 
 	private static int tableSize = 1997; // Size of the hash table.
 	private static int numWords = 0; // Stores number of words in the hash
@@ -31,14 +39,27 @@ public class FinalProject {
 
 		try {
 			FileReader filereader = new FileReader(fileName);
+			FileReader filereader2 = new FileReader(fileName);
 			BufferedReader bufferedReader = new BufferedReader(filereader);
+			BufferedReader bufferedReader2 = new BufferedReader(filereader2);
 			int i = 0;
+
+			start1 = System.currentTimeMillis();
 			while ((ln = bufferedReader.readLine()) != null) {
 				dictionary[i] = ln;
+				i++;
+			}
+			end1 = System.currentTimeMillis();
+
+			start2 = System.currentTimeMillis();
+			while ((ln = bufferedReader2.readLine()) != null) {
 				insertIntoHashMap(ln);
 				i++;
 			}
+			end2 = System.currentTimeMillis();
+
 			bufferedReader.close();
+			bufferedReader2.close();
 		} catch (FileNotFoundException ex) {
 			System.out.println("Unable to open file '" + fileName + "'");
 		} catch (IOException ex) {
@@ -57,7 +78,7 @@ public class FinalProject {
 	private static boolean searchArray(String word) {
 		for (int i = 0; i < dictionary.length; i++) {
 			if (dictionary[i] != null && word.compareTo(dictionary[i]) == 0) {
-				System.out.println("Results from Array:" + word);
+				System.out.println(word);
 				return true;
 			}
 		}
@@ -133,33 +154,60 @@ public class FinalProject {
 		}
 
 		if (table[hashKey] != null && myWord.compareTo(table[hashKey]) == 0) {
-			System.out.println("Results from Hash Map: " + table[hashKey]);
+			System.out.println(table[hashKey]);
 			return table[hashKey];
 		} else
 			return null;
 	}
 
 	/**
-	 * SCRAMBLE ALGORITHM
+	 * SCRAMBLE ALGORITHM FOR ARRAY
 	 * 
 	 * @param s
 	 */
-	public static void findMatches(String s) {
-		findMatches("", s);
+	public static void findMatchesArray(String s) {
+		start3 = System.currentTimeMillis();
+		findMatchesArray("", s);
+		end3 = System.currentTimeMillis();
+	}
+	
+	/**
+	 * SCRAMBLE ALGORITHM FOR HASHTABLE
+	 * 
+	 * @param s
+	 */
+	public static void findMatchesHash(String s) {
+		start4 = System.currentTimeMillis();
+		findMatchesHash("", s);
+		end4 = System.currentTimeMillis();
 	}
 
 	/**
-	 * SCRAMBLE ALGORITHM
+	 * SCRAMBLE ALGORITHM FOR ARRAY
 	 * 
 	 * @param prefix
 	 * @param s
 	 */
-	private static void findMatches(String prefix, String s) {
+	private static void findMatchesArray(String prefix, String s) {
 		searchArray(prefix);
+		if (s.length() != 0) {
+			for (int i = 0; i < s.length(); i++) {
+				findMatchesArray(prefix + s.charAt(i), s.substring(0, i) + s.substring(i + 1, s.length()));
+			}
+		}
+	}
+	
+	/**
+	 * SCRAMBLE ALGORITHM FOR HASH TABLE
+	 * 
+	 * @param prefix
+	 * @param s
+	 */
+	private static void findMatchesHash(String prefix, String s) {
 		searchHashMap(prefix);
 		if (s.length() != 0) {
 			for (int i = 0; i < s.length(); i++) {
-				findMatches(prefix + s.charAt(i), s.substring(0, i) + s.substring(i + 1, s.length()));
+				findMatchesHash(prefix + s.charAt(i), s.substring(0, i) + s.substring(i + 1, s.length()));
 			}
 		}
 	}
@@ -181,14 +229,21 @@ public class FinalProject {
 		FinalProject.toDictionary();
 
 		// calls findMatches for prompted string by user
-		FinalProject.findMatches(s);
-		
-		//time for insertion for array
-		
-		//time for insertion for hash table
-		
-		//time for search for array
-		
-		//time for search for hash table
+		System.out.println();
+		System.out.println("Matches for array: ");
+		FinalProject.findMatchesArray(s);
+		System.out.println();
+		System.out.println("Matches for hash table: ");
+		FinalProject.findMatchesHash(s);
+
+		System.out.println();
+		// time for insertion for array
+		System.out.println("Time for insertion for array: " + (end1 - start1) + "ms");
+		// time for insertion for hash table
+		System.out.println("Time for insertion for hash table: " + (end2 - start2) + "ms");
+		// time for search for array
+		System.out.println("Time for search for array: " + (end3 - start3) + "ms");
+		// time for search for hash table
+		System.out.println("Time for search for hash table: " + (end4 - start4) + "ms");
 	}
 }
